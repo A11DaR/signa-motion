@@ -7,6 +7,7 @@ const norm=a=>Math.hypot(a.x,a.y,a.z);
 const dist=(a,b)=>norm(sub(a,b));
 const angle=(a,b,c)=>{const u=sub(a,b),v=sub(c,b);return Math.acos(clamp(dot(u,v)/(norm(u)*norm(v)||1),-1,1))*180/Math.PI;};
 const cross=(a,b)=>({x:a.y*b.z-a.z*b.y,y:a.z*b.x-a.x*b.z,z:a.x*b.y-a.y*b.x});
+const unit=a=>{const n=norm(a)||1;return {x:a.x/n,y:a.y/n,z:a.z/n};};
 
 export function extractFeatures(screen, world=null, aspect=4/3, handedness='Right') {
  if(!Array.isArray(screen)||screen.length!==21||screen.some(p=>!Number.isFinite(p.x)||!Number.isFinite(p.y)||!Number.isFinite(p.z??0))) return null;
@@ -32,11 +33,17 @@ export function extractFeatures(screen, world=null, aspect=4/3, handedness='Righ
  const facingCamera=(handedness==='Left'?1:-1)*imageNormal.z>0&&Math.abs(palmNormal.z)/(norm(palmNormal)||1)>.2;
  const v=sub(p[9],p[0]);
  const pitch=Math.atan2(v.z,-v.y);
+ const direction=unit(v),widthVector=sub(p[17],p[5]),along=dot(widthVector,direction);
+ const across=unit({x:widthVector.x-direction.x*along,y:widthVector.y-direction.y*along,z:widthVector.z-direction.z*along});
+ const palmFrame={direction,across,normal:unit(cross(across,direction))};
  const screenScale=Math.hypot((screen[5].x-screen[17].x)*aspect,screen[5].y-screen[17].y);
+ const viewScale=Math.max(screenScale,dist(projected[0],projected[9])*.8);
  const cropped=screen.some(q=>q.x<.015||q.x>.985||q.y<.015||q.y>.985);
  const closeGap=Math.max(dist(p[8],p[4]),dist(p[12],p[4]))/scale;
- return {fingers,thumbOut,facingCamera,pitch,scale,screenScale,cropped,closeGap,
-   pairTogether:dist(p[8],p[12])/scale<.6,pinchGap:dist(p[8],p[4])/scale,
+ const thumbOnFist=Math.min(...[6,10,14,18].map(i=>dist(p[4],p[i])))/scale<.65;
+ const screenCloseGap=Math.max(dist(projected[8],projected[4]),dist(projected[12],projected[4]))/(viewScale||1);
+ return {fingers,thumbOut,thumbOnFist,facingCamera,pitch,palmFrame,scale,screenScale,viewScale,cropped,closeGap,screenCloseGap,
+   pairTogether:dist(p[8],p[12])/scale<.8,pinchGap:dist(p[8],p[4])/scale,
    openPalm:fingers.every(f=>f.extended)&&thumbOut&&facingCamera,
    center:{x:(screen[0].x+screen[9].x)/2,y:(screen[0].y+screen[9].y)/2},
    bounds:{left:Math.min(...screen.map(p=>p.x)),right:Math.max(...screen.map(p=>p.x)),top:Math.min(...screen.map(p=>p.y)),bottom:Math.max(...screen.map(p=>p.y))},
@@ -44,14 +51,15 @@ export function extractFeatures(screen, world=null, aspect=4/3, handedness='Righ
  };
 }
 
+export function isClosedFist(f){return !!f&&f.fingers.every(v=>v.folded)&&(f.thumbOnFist??!f.thumbOut);}
+
 // This only identifies a plausible starting pose for leaving cursor mode.
 // It never awards a lesson pass; the temporal recognizer still has to finish.
 export function matchesLessonPose(f,target){
- if(!f||f.cropped||f.screenScale<.065||f.screenScale>.62)return false;
+ if(!f||f.cropped||(f.viewScale??f.screenScale)<.065||(f.viewScale??f.screenScale)>.62)return false;
  const [index,middle,ring,pinky]=f.fingers;
  if(target==='ily')return index.extended&&pinky.extended&&middle.folded&&ring.folded&&f.thumbOut&&f.facingCamera&&f.indexUpright;
- if(target==='yes')return f.fingers.every(x=>x.folded)&&!f.thumbOut;
+ if(target==='yes')return isClosedFist(f);
  if(target==='no')return index.extended&&middle.extended&&ring.folded&&pinky.folded&&f.pairTogether&&f.closeGap>.72;
  return false;
 }
-

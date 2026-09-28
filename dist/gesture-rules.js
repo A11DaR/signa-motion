@@ -1,4 +1,4 @@
-import {matchesLessonPose} from './landmarks.js?v=20260928-5';
+import {matchesLessonPose,isClosedFist} from './landmarks.js?v=20260928-6';
 const clamp=x=>Math.max(0,Math.min(1,x));
 const fingerScore=(f,extended)=>extended?clamp((f.bend-105)/50)*clamp((f.reach-.94)/.3):Math.max(clamp((145-f.bend)/55),clamp((1.08-f.reach)/.3));
 function check(label,pass,error,badFingers=[],score=Number(pass),weight=1){return {label,pass,error,badFingers,score:pass?Math.max(.9,score):Math.min(.85,score),weight};}
@@ -6,8 +6,8 @@ export function trackingIssue(f,profile=null){
  if(!f)return {code:'missing',title:'Покажи руку целиком',detail:'Помести кисть перед камерой. Свет должен падать на ладонь.'};
  if(f.cropped)return {code:'cropped',title:'Кисть выходит из кадра',detail:'Отодвинь руку от края: нужны все пальцы и запястье.'};
  const min=profile?Math.max(.05,profile.palmSize*.38):.065,max=profile?Math.min(.7,Math.max(.4,profile.palmSize*2.4)):.62;
- if(f.screenScale<min)return {code:'far',title:'Поднеси руку ближе',detail:'Кисть слишком маленькая, чтобы уверенно различать пальцы.'};
- if(f.screenScale>max)return {code:'near',title:'Отодвинь руку немного дальше',detail:'Оставь место вокруг кисти и для её движения.'};
+ if((f.viewScale??f.screenScale)<min)return {code:'far',title:'Поднеси руку ближе',detail:'Кисть слишком маленькая, чтобы уверенно различать пальцы.'};
+ if((f.viewScale??f.screenScale)>max)return {code:'near',title:'Отодвинь руку немного дальше',detail:'Оставь место вокруг кисти и для её движения.'};
  return null;
 }
 export function validateGesture(gesture,f,{phase='open'}={}){
@@ -24,7 +24,7 @@ export function validateGesture(gesture,f,{phase='open'}={}){
   check('Ладонь к камере',f.facingCamera,'Разверни ладонь к камере'),
   check('Пальцы вверх',f.indexUpright,'Направь указательный палец вверх',[1])
  ];
- if(gesture==='yes')checks=[...f.fingers.map((v,i)=>finger(['Указательный согнут','Средний согнут','Безымянный согнут','Мизинец согнут'][i],v,false,'Согни '+['указательный палец','средний палец','безымянный палец','мизинец'][i]+' к ладони',i+1)),check('Большой поверх пальцев',!f.thumbOut,'Положи большой палец поверх кулака',[0])];
+ if(gesture==='yes')checks=[...f.fingers.map((v,i)=>finger(['Указательный согнут','Средний согнут','Безымянный согнут','Мизинец согнут'][i],v,false,'Согни '+['указательный палец','средний палец','безымянный палец','мизинец'][i]+' к ладони',i+1)),check('Большой поверх пальцев',f.thumbOnFist??!f.thumbOut,'Положи большой палец поверх кулака',[0])];
  if(gesture==='no'){
   checks=[finger('Безымянный согнут',ring,false,'Согни безымянный палец',3),finger('Мизинец согнут',pinky,false,'Согни мизинец',4)];
   if(phase==='open')checks.push(finger('Указательный прямой',index,true,'Раскрой указательный палец',1),finger('Средний прямой',middle,true,'Раскрой средний палец',2),check('Два пальца рядом',f.pairTogether,'Держи указательный и средний рядом',[1,2]),check('Пальцы раскрыты',f.closeGap>.72,'Разведи большой палец и два кончика перед смыканием',[0,1,2]));
@@ -40,7 +40,7 @@ export function detectGesture(f){
  if(!f)return {gesture:null,confidence:0};
  if(matchesLessonPose(f,'ily'))return {gesture:'ily',confidence:validateGesture('ily',f).confidence};
  if(f.openPalm)return {gesture:'open_palm',confidence:.95};
- if(f.fingers.every(v=>v.folded)&&!f.thumbOut)return {gesture:'fist',confidence:validateGesture('yes',f).confidence};
+ if(isClosedFist(f))return {gesture:'fist',confidence:validateGesture('yes',f).confidence};
  const [i,m,r,p]=f.fingers;
  if(i.extended&&m.extended&&r.folded&&p.folded)return {gesture:'two_fingers',confidence:.85};
  return {gesture:null,confidence:0};

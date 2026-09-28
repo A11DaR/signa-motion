@@ -37,3 +37,11 @@ GitHub Pages workflow подготовлен по https://docs.github.com/en/pag
 - Открытая ладонь для калибровки: https://2012books.lardbucket.org/books/a-primer-on-communication-studies/section_04/3c92e0c160680ad6336448ec81f000ad.jpg
 
 Эта небольшая выборка служит проверке конкретных ошибок геометрии, а не заявлению об общей точности распознавания.
+
+Для динамических жестов в `tests/motion-landmarks.json` сохранены только численные результаты той же модели, ссылки и SHA-256. Учебные изображения и анимация ASL University / Dr. Bill Vicars в проект не включены:
+
+- YES: https://www.lifeprint.com/asl101/signjpegs/y/yes1.jpg, https://www.lifeprint.com/asl101/signjpegs/y/yes2.jpg, https://www.lifeprint.com/asl101/signjpegs/y/yes3.jpg, https://www.lifeprint.com/asl101/signjpegs/y/yes4.jpg
+- NO: https://www.lifeprint.com/asl101/signjpegs/n/no.htm24.jpg и https://www.lifeprint.com/asl101/signjpegs/n/no.htm25.jpg
+- Четырёхкадровый учебный NO: https://www.lifeprint.com/asl101/gifs/n/no-2-movement.gif
+
+Проверены исходные и горизонтально отражённые варианты. Для фотографий использован IMAGE-режим MediaPipe, для последовательности GIF — VIDEO с исходными временными отметками. Это проверка геометрии и переходов по учебным образцам, не испытание непрерывного распознавания на людях.

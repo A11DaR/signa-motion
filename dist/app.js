@@ -1,14 +1,15 @@
-import {resultsMarkup} from './results.js?v=20260928-5';
-import {GestureRecognizer, extractFeatures, matchesLessonPose} from './recognizer.js?v=20260928-5';
-import {Course,SIGNS,LESSON,PHRASE} from './course.js?v=20260928-5';
-import {drawOverlay,drawReference} from './diagrams.js?v=20260928-5';
-import {HandCommands} from './commands.js?v=20260928-5';
-import {Calibration} from './calibration.js?v=20260928-5';
-import {CameraSession,CAMERA_ERRORS} from './camera.js?v=20260928-5';
-import {FrameTracker} from './tracking.js?v=20260928-5';
-import {FeedbackGate} from './feedback.js?v=20260928-5';
-import {HandNavigation} from './navigation.js?v=20260928-5';
-import {openReferencePlayer,closeReferencePlayer,toggleReferencePlayer,replayReferencePlayer} from './reference-player.js?v=20260928-5';
+import {resultsMarkup} from './results.js?v=20260928-6';
+import {saveCompletedLesson} from './progress.js?v=20260928-6';
+import {GestureRecognizer, extractFeatures, matchesLessonPose} from './recognizer.js?v=20260928-6';
+import {Course,SIGNS,LESSON,PHRASE} from './course.js?v=20260928-6';
+import {drawOverlay,drawReference} from './diagrams.js?v=20260928-6';
+import {HandCommands} from './commands.js?v=20260928-6';
+import {Calibration} from './calibration.js?v=20260928-6';
+import {CameraSession,CAMERA_ERRORS} from './camera.js?v=20260928-6';
+import {FrameTracker} from './tracking.js?v=20260928-6';
+import {FeedbackGate} from './feedback.js?v=20260928-6';
+import {HandNavigation} from './navigation.js?v=20260928-6';
+import {openReferencePlayer,closeReferencePlayer,toggleReferencePlayer,replayReferencePlayer} from './reference-player.js?v=20260928-6';
 
 const $=id=>document.getElementById(id);
 const course=new Course(),recognizer=new GestureRecognizer(),commands=new HandCommands(),navigation=new HandNavigation();
@@ -203,14 +204,11 @@ function toggleSound(){
  sound=!sound;$('sound-button').textContent='Звук: '+(sound?'вкл.':'выкл.');$('sound-button').setAttribute('aria-pressed',String(sound));
  if(sound)playSound();
 }
-function loadBest(){try{const x=JSON.parse(localStorage.getItem('signa-best-v1')??'null');return x&&Number.isFinite(x.score)&&x.score>=0&&x.score<=100&&Number.isInteger(x.sessions)&&x.sessions>0?x:null;}catch{return null;}}
 function renderResults(){
  recognitionState('✓ Урок завершён','success');
  if(resultsRendered)return;resultsRendered=true;
- const summary=course.summary(),old=loadBest();
- const best={score:Math.max(old?.score??0,summary.score),sessions:(old?.sessions??0)+1};let persisted=true;
- try{localStorage.setItem('signa-best-v1',JSON.stringify(best));}catch{persisted=false;}
- $('results').innerHTML=resultsMarkup(summary,best,persisted);
+ const summary=course.summary(),{progress,persisted,previousScore}=saveCompletedLesson(summary);
+ $('results').innerHTML=resultsMarkup(summary,progress,persisted,previousScore);
  $('results').classList.remove('hidden');$('results').focus({preventScroll:true});$('results').scrollIntoView({behavior:'smooth',block:'start'});
  $('lesson-eyebrow').textContent='3 ИЗ 3 · ГОТОВО';$('auto-next').textContent='Раскрой ладонь, чтобы повторить урок';
  $('pause-button').classList.add('hidden');$('phrase-card').classList.remove('hidden');

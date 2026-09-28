@@ -44,13 +44,21 @@ test('Real landmark-to-DOM pipeline: complete lesson, hands-free controls and ca
    assert.equal(state().target,'yes');assert.equal($('sign-name').textContent,'Да');assert.match($('camera-task').textContent,/«Да»/);assert.equal($('camera-task-count').textContent,'2 / 5');assert.equal(state().summary.checks,1);
    repeat('ily',25);assert.equal(state().summary.checks,1);
   });
-  await t.test('Every task and phrase token advances; completion is saved exactly once',()=>{
-   function yes(){repeat('fist',4);repeat('fist',6,{pitch:.65});repeat('fist',18);}
+  await t.test('Natural YES and camera-derived NO complete every task and phrase token exactly once',async()=>{
+   function yes(){for(const pitch of [0,0,0,0,.12,.28,.45,.30,.12,.04,...Array(18).fill(0)])send('fist',{pitch,viewYaw:Math.PI/2,mirrored:true});}
    yes();assert.equal(state().target,'no');assert.equal($('sign-name').textContent,'Нет');
-   time+=1300;repeat('no',4);repeat('no',15,{closed:true});assert.equal(state().stage,'phrase');assert.equal(state().target,'yes');assert.equal($('phrase-card').classList.contains('hidden'),false);
+   const data=JSON.parse(await readFile(new URL('./motion-landmarks.json',import.meta.url),'utf8'));
+   time+=1300;
+   for(const [name,count] of [['no-open.jpg',8],['no-close.jpg',16]]){
+    const c=data.cases.find(c=>c.name===name&&c.mirrored);$('camera').videoWidth=c.width;$('camera').videoHeight=c.height;
+    for(let i=0;i<count;i++){time+=100;processFrame(c.detection,time);}
+    if(name==='no-open.jpg'){assert.match($('feedback-title').textContent,/Теперь сомкни/);assert.equal(state().status,'exercise');}
+   }
+   $('camera').videoWidth=640;$('camera').videoHeight=480;
+   assert.equal(state().stage,'phrase');assert.equal(state().target,'yes');assert.equal($('phrase-card').classList.contains('hidden'),false);
    time+=1300;yes();assert.equal(state().target,'ily');assert.equal($('token-0').classList.contains('passed'),true);assert.equal($('camera-task-count').textContent,'5 / 5');
    time+=1300;repeat('ily',23);assert.equal(state().stage,'done');assert.equal(state().summary.checks,5);assert.equal($('results').classList.contains('hidden'),false);assert.equal($('token-1').classList.contains('passed'),true);
-   repeat('ily',30);assert.equal(JSON.parse(w.localStorage.getItem('signa-best-v1')).sessions,1);
+   repeat('ily',30);const saved=JSON.parse(w.localStorage.getItem('signa-best-v1'));assert.equal(saved.sessions,1);assert.equal(saved.history.length,1);assert.equal(doc.querySelectorAll('.progress-history li').length,1);assert.ok(doc.querySelector('.lesson-award.earned'));assert.equal(Object.keys(saved.gestureBest).length,3);
   });
   await t.test('Results can restart with the hand cursor and no mouse event from the test',()=>{navOn();dwell('restart-button');assert.equal(state().target,'ily');assert.equal(state().summary.checks,0);assert.equal($('results').classList.contains('hidden'),true);assert.equal($('nav-toggle').getAttribute('aria-pressed'),'false');});
   await t.test('Completed feedback advances without any more camera frames',()=>{

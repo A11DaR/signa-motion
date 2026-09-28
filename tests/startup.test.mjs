@@ -53,7 +53,7 @@ test('Start button drives camera, frame scheduler, calibration, every lesson and
   assert.equal(state().calibrating,true);assert.equal($('camera-start').classList.contains('hidden'),true);
   await runFrames('palm',20);assert.equal(state().calibrating,false);assert.ok(inferences>=20);
   await runFrames('ily',20);assert.equal(state().target,'yes');
-  const yes=async()=>{await runFrames('fist',5);await runFrames('fist',6,{pitch:.65});await runFrames('fist',18);};
+  const yes=async()=>{for(const pitch of [0,0,0,0,0,.12,.28,.45,.30,.12,.04,...Array(18).fill(0)])await runFrames('fist',1,{pitch,viewYaw:Math.PI/2});};
   await yes();assert.equal(state().target,'no');
   await runFrames('no',4);await runFrames('no',16,{closed:true});assert.equal(state().stage,'phrase');
   await yes();assert.equal(state().target,'ily');

@@ -5,7 +5,7 @@ import {Course} from '../dist/course.js';
 import {HandCommands} from '../dist/commands.js';
 
 const finger=(extended)=>({extended,folded:!extended,bend:extended?170:85,tipBend:160,reach:extended?1.4:.7});
-const feature=(type='ily',overrides={})=>({fingers:(type==='ily'?[true,false,false,true]:type==='no'?[true,true,false,false]:[false,false,false,false]).map(finger),thumbOut:type==='ily',facingCamera:true,pitch:0,screenScale:.2,cropped:false,closeGap:1,pairTogether:true,indexUpright:true,...overrides});
+const feature=(type='ily',overrides={})=>{const pitch=overrides.pitch??0;return {fingers:(type==='ily'?[true,false,false,true]:type==='no'?[true,true,false,false]:[false,false,false,false]).map(finger),thumbOut:type==='ily',facingCamera:true,pitch,screenScale:.2,cropped:false,closeGap:1,screenCloseGap:overrides.closeGap??1,pairTogether:true,indexUpright:true,palmFrame:{direction:{x:0,y:-Math.cos(pitch),z:Math.sin(pitch)},across:{x:1,y:0,z:0},normal:{x:0,y:-Math.sin(pitch),z:-Math.cos(pitch)}},...overrides};};
 const feed=(engine,f,start,end,target)=>{let r;for(let t=start;t<=end;t+=50)r=engine.updateFeatures(f,t,target);return r;};
 
 test('ILY requires a 700 ms of valid observations, not a single matching frame',()=>{const r=new GestureRecognizer();assert.equal(r.updateFeatures(feature(),0,'ily').success,false);assert.equal(feed(r,feature(),50,650,'ily').success,false);assert.equal(r.updateFeatures(feature(),700,'ily').success,true);});

@@ -1,7 +1,7 @@
 export const SIGNS={
  ily:{name:'Я тебя люблю',gloss:'I LOVE YOU',type:'Статичный',hold:'Удержи жест 0,7 секунды',instructions:['Выпрями большой, указательный палец и мизинец.','Согни средний и безымянный. Ладонь — к камере.','Направь пальцы вверх и удержи положение.'],source:'https://www.lifeprint.com/asl101/topics/ily.htm',video:null,image:'https://www.lifeprint.com/asl101/images-layout/ily_asl_1024h.gif'},
- yes:{name:'Да',gloss:'YES',type:'С движением',hold:'Кивни кистью и верни её обратно',instructions:['Собери пальцы в кулак. Большой палец — поверх пальцев.','Кивни кулаком вниз, сгибая кисть в запястье.','Верни кисть обратно и задержи кулак на полсекунды.'],source:'https://www.lifeprint.com/asl101/pages-signs/y/yes.htm',video:'0usayvOXzHo'},
- no:{name:'Нет',gloss:'NO',type:'С движением',hold:'Раскрой → сомкни пальцы',instructions:['Согни безымянный и мизинец к ладони.','Указательный и средний держи рядом; большой — напротив.','Сомкни оба кончика с большим и задержи на полсекунды.'],source:'https://www.lifeprint.com/asl101/pages-signs/n/no.htm',video:'QJXKaOSyl4o'}
+ yes:{name:'Да',gloss:'YES',type:'С движением',hold:'Кивок → возврат → полсекунды спокойно',instructions:['Собери пальцы в кулак. Большой палец — поверх пальцев.','Плавно кивни кистью вниз и обратно. Внизу останавливаться не нужно.','После возврата задержи кулак на полсекунды.'],source:'https://www.lifeprint.com/asl101/pages-signs/y/yes.htm',video:'0usayvOXzHo'},
+ no:{name:'Нет',gloss:'NO',type:'С движением',hold:'Раскрой → дождись подсказки → сомкни',instructions:['Согни безымянный и мизинец. Указательный и средний раскрой рядом; большой — напротив.','Задержи раскрытые пальцы до подсказки «Теперь сомкни».','Коснись большого обоими кончиками и задержи на полсекунды.'],source:'https://www.lifeprint.com/asl101/pages-signs/n/no.htm',video:'QJXKaOSyl4o'}
 };
 export const LESSON=['ily','yes','no'];
 export const PHRASE=['yes','ily'];
