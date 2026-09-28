@@ -9,5 +9,6 @@ export function hand(type='palm',{pitch=0,closed=false,dx=0,dy=0,mirrored=false}
  const world=p.map(q=>({x:q.x*4/3,y:.8+(q.y-.8)*Math.cos(pitch),z:(q.y-.8)*Math.sin(pitch)}));
  const screen=world.map(q=>({x:q.x/(4/3)+dx,y:q.y+dy,z:q.z/(4/3)}));
  if(mirrored){screen.forEach(q=>q.x=1-q.x);world.forEach(q=>q.x=-q.x);}
- return {landmarks:[screen],worldLandmarks:[world],handedness:[[{categoryName:mirrored?'Left':'Right'}]]};
+ // Thumb on image-left with palm toward the camera is MediaPipe's Left label.
+ return {landmarks:[screen],worldLandmarks:[world],handedness:[[{categoryName:mirrored?'Right':'Left'}]]};
 }

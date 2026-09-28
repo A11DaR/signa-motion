@@ -26,3 +26,14 @@ ASL University / Dr. Bill Vicars:
 ## Публикация
 
 GitHub Pages workflow подготовлен по https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages . Отдельное создание публичного GitHub-репозитория и включение Pages требует доступа к аккаунту команды.
+
+## Контрольные фотографии для регрессионных тестов
+
+Фотографии не распространяются в проекте. В `tests/photo-landmarks.json` и `tests/calibration-palm.json` сохранены только численные результаты HandLandmarker, URL и SHA-256 исходников и модели.
+
+- ILY: https://www.lifeprint.com/asl101/images-signs/i_love_you.jpg
+- ILY: https://images.squarespace-cdn.com/content/v1/5b88676fcef37262b9ba64ea/1664413751184-W3XPG6E5XSHI5ZM6Y182/ily.jpg?format=1500w
+- Другие формы кисти: публичные `fist.jpg`, `thumb_up.jpg`, `victory.jpg`, `pointing_up.jpg`, `right_hands.jpg`, `left_hands.jpg` из https://storage.googleapis.com/mediapipe-assets/ . Полные ссылки находятся в данных теста.
+- Открытая ладонь для калибровки: https://2012books.lardbucket.org/books/a-primer-on-communication-studies/section_04/3c92e0c160680ad6336448ec81f000ad.jpg
+
+Эта небольшая выборка служит проверке конкретных ошибок геометрии, а не заявлению об общей точности распознавания.

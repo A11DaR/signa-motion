@@ -1,5 +1,5 @@
-import {CONNECTIONS} from './recognizer.js?v=20260928-2';
-import {videoRect,projectLandmark} from './viewport.js?v=20260928-2';
+import {CONNECTIONS} from './recognizer.js?v=20260928-4';
+import {videoRect,projectLandmark} from './viewport.js?v=20260928-4';
 // Instructional landmark diagram, not a depiction of a human or a reference video.
 export function drawReference(canvas,sign,time=0){
  const c=canvas.getContext('2d'),w=canvas.width,h=canvas.height;

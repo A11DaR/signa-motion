@@ -13,12 +13,15 @@
 /* Camera pixels and landmark overlay share one untransformed viewport. */
 .camera-stage{width:100%;height:auto;min-height:0;max-height:620px;aspect-ratio:var(--camera-ratio,4/3)}
 .camera-stage:not(.is-streaming){aspect-ratio:auto;min-height:360px}
+.camera-start.is-loading .focus-frame{display:none}
 .camera-stage video{display:block;object-fit:contain;object-position:50% 50%;transform:none}
 .camera-stage video[data-mirrored="true"]{transform:scaleX(-1)}
 .camera-stage>canvas{display:block;object-fit:fill;transform:none}
 .camera-stage.is-streaming .camera-grid{display:none}
 .camera-taskline{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 20px;background:#22332b;border-top:1px solid #ffffff09}
 .camera-taskline strong{font-size:15px;font-weight:600;line-height:1.4}.camera-taskline>span{font-size:13px;color:#cef569;white-space:nowrap}
+.camera-taskline strong{display:block}.recognition-state{display:block;margin-top:5px;font-size:13px;line-height:1.4;color:#b9cbbf}.recognition-state[data-kind="success"]{color:#cef569}.recognition-state[data-kind="correction"],.recognition-state[data-kind="tracking"]{color:#ffd4a2}
+.assessment-line{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:20px;font-size:14px;flex-wrap:wrap}.state-badge{padding:6px 10px;border-radius:6px;background:#edf2e8;color:#4d6551;font-weight:650}.state-badge[data-state="Incorrect"]{background:#ffe4db;color:#8a321f}.state-badge[data-state="Almost"]{background:#fff0c0;color:#765408}.state-badge[data-state="Correct"]{background:#d4efac;color:#335714}.error-list{margin:12px 0 0;padding-left:18px;color:#97541f;font-size:14px;line-height:1.6}.error-list:empty{display:none}.lesson-card.is-completed{border-color:#6da836;box-shadow:0 0 0 3px #b3d78744}.camera-start #cancel-camera{margin-top:12px}.stats{grid-template-columns:repeat(3,minmax(0,1fr))}.stats .stat strong{overflow-wrap:anywhere}.best-gesture{font-size:20px!important;letter-spacing:0!important}button:disabled{cursor:not-allowed;opacity:.55}.camera-controls button:disabled{opacity:.4}
 .camera-top,.camera-bottom,.camera-controls{flex-wrap:wrap}.camera-controls{gap:8px}.camera-controls .glass-button{flex:1;white-space:nowrap}.feedback>div:nth-child(2){min-width:0;flex:1}.camera-bottom{gap:12px}
 .camera-card,.lesson-card,.learning-grid{min-width:0}.camera-bottom>span{flex:1}.camera-bottom button{white-space:nowrap}
 .camera-controls{position:static;padding:12px;background:#1c2927;border-top:1px solid #ffffff09}.gesture-banner{bottom:20px}
@@ -26,3 +29,5 @@
 .navigation-bar strong{font-size:14px;display:block}.navigation-bar small{font-size:12px;display:block;margin-top:5px;color:#bdcfae}.navigation-bar button{flex-shrink:0;border:1px solid #799e50;border-radius:8px;background:#cef569;color:#1b2c1a;padding:12px;font-size:14px;font-weight:600}.glass-button[aria-pressed="true"]{background:#cef569;color:#1b2c1a;border-color:#cef569}
 .video-controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}#video-container{min-height:200px}.gesture-banner{pointer-events:none}
 @media(max-width:740px){.camera-stage{min-height:0;max-height:560px}.camera-stage:not(.is-streaming){min-height:330px}.camera-taskline{padding:11px 15px}.camera-taskline strong{font-size:14px}.camera-controls{left:10px;right:10px;bottom:10px;gap:5px}.camera-controls .glass-button{font-size:12px;padding:10px 7px}.navigation-bar{gap:10px;padding:10px 12px;top:8px}.navigation-bar small{max-width:220px;line-height:1.45}.navigation-bar button{font-size:13px;padding:10px}.camera-bottom{font-size:11px}.camera-bottom .text-button{font-size:12px}.feedback{min-height:92px}.gesture-banner{inset:auto 12px 65px}}
+
+@media(max-width:480px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}

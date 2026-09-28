@@ -1,8 +1,14 @@
-import {readFile,stat} from 'node:fs/promises';
+import {readFile,stat,readdir} from 'node:fs/promises';
 import {execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 const root=fileURLToPath(new URL('../',import.meta.url));
-for(const file of ['app.js','course.js','recognizer.js','diagrams.js','commands.js','navigation.js','viewport.js','reference-player.js','vendor/vision_bundle.mjs','vendor/vision_wasm_internal.js'])execFileSync(process.execPath,['--check',root+'dist/'+file]);
+const modules=(await readdir(root+'dist')).filter(file=>file.endsWith('.js'));
+for(const file of [...modules,'vendor/vision_bundle.mjs','vendor/vision_wasm_internal.js']){
+ execFileSync(process.execPath,['--check',root+'dist/'+file]);
+ if(file.startsWith('vendor/'))continue;
+ const source=await readFile(root+'dist/'+file,'utf8');
+ for(const match of source.matchAll(/(?:from\s*|import\()\s*['"]\.\/([^'"]+)['"]/g))await stat(root+'dist/'+match[1].split('?')[0]);
+}
 const html=await readFile(root+'dist/index.html','utf8');
 const app=await readFile(root+'dist/app.js','utf8');
 const htmlIDs=[...html.matchAll(/id="([^"]+)"/g)].map(x=>x[1]);
