@@ -1,14 +1,14 @@
-import {resultsMarkup} from './results.js?v=20260928-4';
-import {GestureRecognizer, extractFeatures, matchesLessonPose} from './recognizer.js?v=20260928-4';
-import {Course,SIGNS,LESSON,PHRASE} from './course.js?v=20260928-4';
-import {drawOverlay,drawReference} from './diagrams.js?v=20260928-4';
-import {HandCommands} from './commands.js?v=20260928-4';
-import {Calibration} from './calibration.js?v=20260928-4';
-import {CameraSession,CAMERA_ERRORS} from './camera.js?v=20260928-4';
-import {FrameTracker} from './tracking.js?v=20260928-4';
-import {FeedbackGate} from './feedback.js?v=20260928-4';
-import {HandNavigation} from './navigation.js?v=20260928-4';
-import {openReferencePlayer,closeReferencePlayer,toggleReferencePlayer,replayReferencePlayer} from './reference-player.js?v=20260928-4';
+import {resultsMarkup} from './results.js?v=20260928-5';
+import {GestureRecognizer, extractFeatures, matchesLessonPose} from './recognizer.js?v=20260928-5';
+import {Course,SIGNS,LESSON,PHRASE} from './course.js?v=20260928-5';
+import {drawOverlay,drawReference} from './diagrams.js?v=20260928-5';
+import {HandCommands} from './commands.js?v=20260928-5';
+import {Calibration} from './calibration.js?v=20260928-5';
+import {CameraSession,CAMERA_ERRORS} from './camera.js?v=20260928-5';
+import {FrameTracker} from './tracking.js?v=20260928-5';
+import {FeedbackGate} from './feedback.js?v=20260928-5';
+import {HandNavigation} from './navigation.js?v=20260928-5';
+import {openReferencePlayer,closeReferencePlayer,toggleReferencePlayer,replayReferencePlayer} from './reference-player.js?v=20260928-5';
 
 const $=id=>document.getElementById(id);
 const course=new Course(),recognizer=new GestureRecognizer(),commands=new HandCommands(),navigation=new HandNavigation();
@@ -117,21 +117,24 @@ function showExample(){
 }
 function setStartLoading(text){$('camera-start').classList.add('is-loading');$('start-camera').disabled=true;$('start-camera').querySelector('span').textContent=text;$('camera-title').textContent='Готовим камеру';$('camera-description').textContent='Разреши доступ в окне браузера. После загрузки покажи открытую ладонь.';$('cancel-camera').classList.remove('hidden');}
 async function startCamera(){
- if(loading)return;const call=++cameraStartId;loading=true;setStartLoading('Разреши доступ…');
+ if(loading)return;const call=++cameraStartId;let startupStage='permission';loading=true;setStartLoading('Разреши доступ…');
  prepareAudio();
  try{
-  const ready=await cameraSession.start(facing,stage=>setStartLoading(stage==='model'?'Загружаем распознавание…':'Разреши доступ…'));
+  const ready=await cameraSession.start(facing,stage=>{startupStage=stage;setStartLoading(stage==='model'?'Загружаем распознавание…':'Разреши доступ…');});
   if(!ready||call!==cameraStartId)return;
+  startupStage='tracking';
   running=true;paused=false;syncCameraLayout();$('camera-stage').classList.add('is-streaming');
   try{sessionStorage.setItem('signa-camera','on');}catch{}
   $('camera-start').classList.add('hidden');$('camera-controls').classList.remove('hidden');$('camera-label').classList.add('on');$('camera-label').innerHTML='<i></i> КАМЕРА ВКЛЮЧЕНА';
   $('pause-button').textContent='Пауза';$('calibrate-button').disabled=false;$('camera-bottom-label').innerHTML='<i class="status-dot"></i> Видео не записывается';
   startCalibration();tracker.start(cameraSession,processDetectionFrame,()=>stopCamera('Распознавание прервалось','Попробуй включить камеру ещё раз.'));
- }catch(error){if(call!==cameraStartId)return;const [title,detail]=CAMERA_ERRORS[error.name]??['Не удалось запустить распознавание','Проверь соединение и повтори запуск.'];stopCamera(title,detail);}
+ }catch(error){if(call!==cameraStartId)return;const fallback=startupStage==='model'?['Не удалось загрузить распознавание','Обнови страницу и повтори запуск. Для загрузки нужен доступ к сети.']:['Не удалось запустить распознавание','Обнови страницу и повтори запуск. Если ошибка повторяется, попробуй другой браузер.'];const [title,detail]=CAMERA_ERRORS[error.name]??fallback;stopCamera(title,detail);}
  finally{if(call===cameraStartId){loading=false;$('camera-start').classList.remove('is-loading');$('start-camera').disabled=false;$('start-camera').querySelector('span').textContent='Включить камеру';$('cancel-camera').classList.add('hidden');}}
 }
 function stopCamera(title='Камера выключена',detail='Включи её, когда будешь готов продолжить.'){
+ const wasCalibrating=calibrating;
  cameraStartId++;loading=false;running=false;calibrating=false;tracker.stop();cameraSession.stop();setNavigation(false);recognizer.reset();
+ if(wasCalibrating)setLesson();
  try{sessionStorage.removeItem('signa-camera');}catch{}
  course.pause(performance.now());$('camera-stage').classList.remove('is-streaming');
  $('camera-start').classList.remove('is-loading');
@@ -301,7 +304,7 @@ $('close-video').addEventListener('click',()=>closeDialog('video-dialog'));
 $('return-practice').addEventListener('click',returnToLesson);
 for(const id of ['info-dialog','video-dialog'])$(id).addEventListener('cancel',e=>{e.preventDefault();closeDialog(id);});
 document.addEventListener('visibilitychange',()=>{if(document.hidden){resetDwell();recognizer.reset();if(calibrating)calibration.reset();else if(running&&!paused&&course.stage!=='done')pauseCourse('Пауза: вкладка была скрыта');}});
-window.addEventListener('pagehide',()=>{closed=true;running=false;cameraStartId++;tracker.stop();cameraSession.stop();cancelAnimationFrame(animationRequest);try{audio?.close().catch(()=>{});}catch{}audio=null;closeReferencePlayer();});
+window.addEventListener('pagehide',()=>{closed=true;running=false;cameraStartId++;tracker.stop();cameraSession.stop();cancelAnimationFrame(animationRequest);clearTimeout(toastTimer);toastTimer=null;$('toast').classList.add('hidden');try{audio?.close().catch(()=>{});}catch{}audio=null;closeReferencePlayer();});
 window.addEventListener('pageshow',e=>{if(e.persisted){closed=false;animationRequest=requestAnimationFrame(tick);stopCamera();}});
 setLesson();requestAnimationFrame(tick);
 try{if(sessionStorage.getItem('signa-camera')==='on')startCamera();}catch{}

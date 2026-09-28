@@ -1,4 +1,4 @@
-import {matchesLessonPose} from './landmarks.js?v=20260928-4';
+import {matchesLessonPose} from './landmarks.js?v=20260928-5';
 const clamp=x=>Math.max(0,Math.min(1,x));
 const fingerScore=(f,extended)=>extended?clamp((f.bend-105)/50)*clamp((f.reach-.94)/.3):Math.max(clamp((145-f.bend)/55),clamp((1.08-f.reach)/.3));
 function check(label,pass,error,badFingers=[],score=Number(pass),weight=1){return {label,pass,error,badFingers,score:pass?Math.max(.9,score):Math.min(.85,score),weight};}

@@ -1,9 +1,9 @@
-import {StableHold} from './stability.js?v=20260928-4';
-import {validateGesture,assessment,trackingIssue} from './gesture-rules.js?v=20260928-4';
-import {extractFeatures} from './landmarks.js?v=20260928-4';
-export {extractFeatures,CONNECTIONS,matchesLessonPose} from './landmarks.js?v=20260928-4';
-export {StableHold} from './stability.js?v=20260928-4';
-export {detectGesture,validateGesture,getGestureErrors} from './gesture-rules.js?v=20260928-4';
+import {StableHold} from './stability.js?v=20260928-5';
+import {validateGesture,assessment,trackingIssue} from './gesture-rules.js?v=20260928-5';
+import {extractFeatures} from './landmarks.js?v=20260928-5';
+export {extractFeatures,CONNECTIONS,matchesLessonPose} from './landmarks.js?v=20260928-5';
+export {StableHold} from './stability.js?v=20260928-5';
+export {detectGesture,validateGesture,getGestureErrors} from './gesture-rules.js?v=20260928-5';
 const motionCheck=(label,pass,error)=>({label,pass,error,weight:2,score:Number(pass),badFingers:[]});
 export class GestureRecognizer {
  constructor(){this.profile=null;this.reset();}

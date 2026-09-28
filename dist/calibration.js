@@ -1,5 +1,5 @@
-import {StableHold} from './stability.js?v=20260928-4';
-import {trackingIssue} from './gesture-rules.js?v=20260928-4';
+import {StableHold} from './stability.js?v=20260928-5';
+import {trackingIssue} from './gesture-rules.js?v=20260928-5';
 const median=values=>[...values].sort((a,b)=>a-b)[Math.floor(values.length/2)];
 export class Calibration {
  constructor(){this.reset();}

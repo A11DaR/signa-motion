@@ -1,5 +1,7 @@
 export class FrameTracker {
- constructor({raf=globalThis.requestAnimationFrame,caf=globalThis.cancelAnimationFrame,visible=()=>!document.hidden,canvasFactory=()=>document.createElement('canvas')}={}){this.raf=raf;this.caf=caf;this.visible=visible;this.canvasFactory=canvasFactory;this.epoch=0;this.request=null;this.session=null;this.brightness=null;this.lightAt=0;}
+ // Window methods must keep their global receiver. Storing the native function
+ // and calling this.raf()/this.caf() throws Illegal invocation in browsers.
+ constructor({raf=callback=>globalThis.requestAnimationFrame(callback),caf=id=>globalThis.cancelAnimationFrame(id),visible=()=>!document.hidden,canvasFactory=()=>document.createElement('canvas')}={}){this.raf=raf;this.caf=caf;this.visible=visible;this.canvasFactory=canvasFactory;this.epoch=0;this.request=null;this.session=null;this.brightness=null;this.lightAt=0;}
  start(session,onFrame,onError){
   this.stop();this.session=session;const epoch=this.epoch;let busy=false,lastFrame=-1,lastAt=-Infinity,errors=0;
   const tick=async time=>{
