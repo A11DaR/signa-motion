@@ -92,6 +92,7 @@ async function loadModel(){
  if(model)return;
  const {FilesetResolver,HandLandmarker}=await import('./vendor/vision_bundle.mjs');
  const files=await FilesetResolver.forVisionTasks(new URL('./vendor/',import.meta.url).href.replace(/\/$/,''));
+ if(files.wasmBinaryPath.includes('nosimd'))throw Object.assign(new Error('WebAssembly SIMD is required'),{name:'UnsupportedWasm'});
  const options={baseOptions:{modelAssetPath:new URL('./models/hand_landmarker.task',import.meta.url).href,delegate:'GPU'},runningMode:'VIDEO',numHands:2,minHandDetectionConfidence:.6,minHandPresenceConfidence:.6,minTrackingConfidence:.65};
  try{model=await HandLandmarker.createFromOptions(files,options);}catch(error){console.info('Using CPU inference',error?.name);options.baseOptions.delegate='CPU';model=await HandLandmarker.createFromOptions(files,options);}
 }
@@ -115,7 +116,7 @@ async function startCamera(){
   feedback('Покажи руку целиком','Начни с жеста «'+SIGNS[course.target??'ily'].name+'».');
   stream.getVideoTracks().forEach(t=>t.addEventListener('ended',()=>{if(running)stopCamera('Доступ к камере прерван','Подключи камеру и включи её снова.');},{once:true}));
  }catch(error){
-  const messages={NotAllowedError:['Камера пока недоступна','Разреши доступ к камере в настройках сайта, затем попробуй ещё раз.'],NotFoundError:['Камера не найдена','Подключи веб-камеру или открой сайт на телефоне.'],NotReadableError:['Камера занята','Закрой другие приложения с камерой и повтори попытку.'],InsecureContext:['Нужен защищённый адрес','Открой приложение по HTTPS или на localhost.'],Unsupported:['Браузер не поддерживает камеру','Открой сайт в актуальном Chrome, Edge или Safari.']};
+  const messages={NotAllowedError:['Камера пока недоступна','Разреши доступ к камере в настройках сайта, затем попробуй ещё раз.'],NotFoundError:['Камера не найдена','Подключи веб-камеру или открой сайт на телефоне.'],NotReadableError:['Камера занята','Закрой другие приложения с камерой и повтори попытку.'],InsecureContext:['Нужен защищённый адрес','Открой приложение по HTTPS или на localhost.'],Unsupported:['Браузер не поддерживает камеру','Открой сайт в актуальном Chrome, Edge или Safari.'],UnsupportedWasm:['Обнови браузер','Для распознавания нужна поддержка WebAssembly SIMD. Используй актуальный Chrome, Edge или Safari.']};
   const [title,detail]=messages[error.name]??['Не удалось запустить распознавание','Проверь соединение и обнови страницу. Если не поможет, попробуй другой браузер.'];
   console.error('Camera initialization failed',error);stopCamera(title,detail);
  }finally{loading=false;$('start-camera').disabled=false;$('start-camera').querySelector('span').textContent='Включить камеру';}
