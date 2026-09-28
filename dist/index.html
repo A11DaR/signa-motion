@@ -6,8 +6,8 @@
   <title>SIGNA — учись говорить руками</title>
   <meta name="description" content="Интерактивный вводный урок ASL. Повторяйте жесты перед камерой, получайте подсказки и соберите первую фразу.">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='13' fill='%23cef569'/%3E%3Cpath d='M14 33V21m7 12V12m7 21V18m7 15V9' stroke='%23101718' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="./styles.css">
-  <script type="module" src="./app.js"></script>
+  <link rel="stylesheet" href="./styles.css?v=20260928-2">
+  <script type="module" src="./app.js?v=20260928-2"></script>
 </head>
 <body>
  <header class="header">
@@ -25,6 +25,7 @@
   <div class="learning-grid">
    <section class="camera-card" aria-label="Камера и обратная связь">
     <div class="camera-top"><span class="live-tag" id="camera-label"><i></i> КАМЕРА ВЫКЛЮЧЕНА</span><span class="camera-tag" id="tracking-label">Левая или правая рука</span></div>
+    <div class="camera-taskline"><strong id="camera-task">Повтори: «Я тебя люблю»</strong><span id="camera-task-count">1 / 5</span></div>
     <div class="camera-stage" id="camera-stage">
      <video id="camera" autoplay muted playsinline aria-label="Зеркальное изображение с вашей камеры"></video><canvas id="overlay" aria-label="Распознанные суставы руки"></canvas>
      <div class="camera-grid" aria-hidden="true"></div>
@@ -34,11 +35,11 @@
       <button class="button primary" id="start-camera"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="12" height="12" rx="3"/><path d="m15 10 6-3v10l-6-3z"/></svg><span>Включить камеру</span><span aria-hidden="true">↗</span></button>
       <span class="privacy-line"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2 4 5v5c0 4 6 7 6 7s6-3 6-7V5z"/><path d="m7 9 2 2 4-4"/></svg>Видео остаётся на твоём устройстве</span>
      </div>
-     <div class="camera-controls hidden" id="camera-controls"><button class="glass-button" id="switch-camera" data-gesture aria-label="Переключить камеру">↻ Камера</button><button class="glass-button" id="pause-button" data-gesture>Пауза</button></div>
      <div class="gesture-banner hidden" id="gesture-banner"><span id="gesture-banner-text">Жест засчитан</span><span aria-hidden="true">✓</span></div>
     </div>
+    <div class="camera-controls hidden" id="camera-controls"><button class="glass-button" id="switch-camera" data-gesture aria-label="Переключить камеру">↻ Камера</button><button class="glass-button" id="nav-toggle" aria-pressed="false" data-gesture>✋ Курсор рукой</button><button class="glass-button" id="pause-button" data-gesture>Пауза</button></div>
     <div class="feedback" id="feedback" role="status" aria-live="polite"><div class="feedback-icon" id="feedback-icon">✧</div><div><strong id="feedback-title">Здесь появится твоя подсказка</strong><p id="feedback-detail">Распознаём форму пальцев и движение кисти.</p></div><div class="recognition-ring" id="recognition-ring" aria-label="Прогресс выполнения"><span id="recognition-value">—</span></div></div>
-    <div class="camera-bottom"><span id="camera-bottom-label"><i class="status-dot"></i> Обработка на устройстве</span><button id="sound-button" class="text-button" aria-pressed="false" data-gesture>Звук: выкл.</button></div>
+    <div class="camera-bottom"><span id="camera-bottom-label"><i class="status-dot"></i> Обработка на устройстве</span><button id="restart-lesson" class="text-button" data-gesture>Начать заново</button><button id="sound-button" class="text-button" aria-pressed="false" data-gesture>Звук: выкл.</button></div>
    </section>
    <aside class="lesson-card" id="lesson-card" aria-label="Текущий жест">
     <div class="lesson-card-top"><span class="eyebrow" id="lesson-eyebrow">ЖЕСТ 1 ИЗ 3</span><span class="pill" id="lesson-pill">Статичный</span></div>
@@ -52,14 +53,15 @@
   </div>
   <section class="lesson-bottom">
    <div class="vocabulary"><div class="eyebrow">В ЭТОМ УРОКЕ</div><div class="vocabulary-list" id="vocabulary"><span class="vocab-item current" data-sign="ily"><b>01</b> Я тебя люблю <i></i></span><span class="vocab-item" data-sign="yes"><b>02</b> Да <i></i></span><span class="vocab-item" data-sign="no"><b>03</b> Нет <i></i></span></div></div>
-   <div class="hands-free"><span class="hands-icon" aria-hidden="true">✋</span><div><strong>Дальше — без мыши</strong><p>Раскрой ладонь и наведи курсор на кнопку.<br>Удержи 1,2 секунды, чтобы выбрать.</p></div></div>
+   <div class="hands-free"><span class="hands-icon" aria-hidden="true">✋</span><div><strong>Дальше — без мыши</strong><p>Ладонь — курсор. Щипок — нажатие.<br>Края экрана — прокрутка. Кулак — урок.</p></div></div>
   </section>
   <section class="phrase-card hidden" id="phrase-card" aria-label="Задание с фразой"><div><span class="eyebrow">СКАЖИ РУКАМИ</span><h2>«Да. Я тебя люблю!»</h2><p>Покажи два изученных жеста по порядку.</p></div><div class="phrase-tokens"><span id="token-0">ДА</span><span aria-hidden="true">→</span><span id="token-1">Я ТЕБЯ ЛЮБЛЮ</span></div></section>
   <section class="results hidden" id="results" aria-label="Результат урока" tabindex="-1"></section>
   <footer><span>SIGNA <span class="footer-dot">/</span> Первые шаги в жестовом языке</span><span>Урок ASL • не РЖЯ <button class="text-button" id="sources-button" data-gesture>Источники и возможности ↗</button></span></footer>
  </main>
- <dialog id="info-dialog"><button class="dialog-close" id="close-info" data-gesture aria-label="Закрыть">×</button><div class="eyebrow">ОБ УРОКЕ</div><h2>Начни с трёх жестов</h2><p>Мы учим три базовых жеста американского жестового языка (ASL). ASL и русский жестовый язык — разные языки.</p><p>Камера проверяет форму и движение одной руки. Мимика, грамматика и все допустимые варианты жестов пока не оцениваются. Это вводный тренажёр, а не переводчик и не замена преподавателю.</p><h3>Как управлять</h3><p>После разрешения камеры урок начинается сам. Переходы автоматические. Одна открытая ладонь — курсор: наведи на кнопку на 1,2 секунды. Две открытые ладони — пауза или продолжение. Два кулака — открыть или закрыть образец. Это команды приложения, а не жесты ASL.</p><h3>Материалы</h3><p>Описания сверены с ASL University, Dr. Bill Vicars. Открой словарь для полного видео и контекста:</p><div class="source-links"><a href="https://www.lifeprint.com/asl101/topics/ily.htm" target="_blank" rel="noopener noreferrer">I LOVE YOU ↗</a><a href="https://www.lifeprint.com/asl101/pages-signs/y/yes.htm" target="_blank" rel="noopener noreferrer">YES ↗</a><a href="https://www.lifeprint.com/asl101/pages-signs/n/no.htm" target="_blank" rel="noopener noreferrer">NO ↗</a></div><p class="muted">Видео камеры не записывается и не отправляется на сервер. Лучший результат сохраняется только в этом браузере. Учебное видео загружается с YouTube только после нажатия.</p></dialog>
- <dialog id="video-dialog"><button class="dialog-close" id="close-video" data-gesture aria-label="Закрыть видео">×</button><div class="eyebrow">ASL UNIVERSITY · BILL VICARS</div><h2 id="video-title">Образец жеста</h2><div id="video-container"></div><p>Повтори по образцу. Если он не открывается, <a id="video-source" target="_blank" rel="noopener noreferrer">посмотри пример в словаре ↗</a>.</p><button class="button primary" id="return-practice" data-gesture>Вернуться к практике</button></dialog>
+ <dialog id="info-dialog"><button class="dialog-close" id="close-info" data-gesture aria-label="Закрыть">×</button><div class="eyebrow">ОБ УРОКЕ</div><h2>Начни с трёх жестов</h2><p>Мы учим три базовых жеста американского жестового языка (ASL). ASL и русский жестовый язык — разные языки.</p><p>Камера проверяет форму и движение одной руки. Мимика, грамматика и все допустимые варианты жестов пока не оцениваются. Это вводный тренажёр, а не переводчик и не замена преподавателю.</p><h3>Как управлять</h3><p>После разрешения камеры урок начинается сам. Переходы автоматические. Открой ладонь на полсекунды — появится курсор. Перемещай руку, наведи курсор на кнопку и сведи большой с указательным пальцем для нажатия. Можно просто удержать курсор 1,2 секунды. Для прокрутки подведи его к верхнему или нижнему краю окна. Сожми кулак на полсекунды — вернёшься к уроку. В режиме курсора учебные жесты не оцениваются. Две открытые ладони — пауза или продолжение. Два кулака — открыть или закрыть образец. Это команды приложения, а не жесты ASL.</p><h3>Материалы</h3><p>Описания сверены с ASL University, Dr. Bill Vicars. Открой словарь для полного видео и контекста:</p><div class="source-links"><a href="https://www.lifeprint.com/asl101/topics/ily.htm" target="_blank" rel="noopener noreferrer">I LOVE YOU ↗</a><a href="https://www.lifeprint.com/asl101/pages-signs/y/yes.htm" target="_blank" rel="noopener noreferrer">YES ↗</a><a href="https://www.lifeprint.com/asl101/pages-signs/n/no.htm" target="_blank" rel="noopener noreferrer">NO ↗</a></div><p class="muted">Видео камеры не записывается и не отправляется на сервер. Лучший результат сохраняется только в этом браузере. Учебное видео загружается с YouTube только после нажатия.</p></dialog>
+ <dialog id="video-dialog"><button class="dialog-close" id="close-video" data-gesture aria-label="Закрыть видео">×</button><div class="eyebrow">ASL UNIVERSITY · BILL VICARS</div><h2 id="video-title">Образец жеста</h2><div id="video-container"></div><div class="video-controls hidden" id="video-controls"><button class="button secondary" id="example-play" disabled data-gesture>▶ Воспроизвести</button><button class="button secondary" id="example-replay" disabled data-gesture>↺ Сначала</button></div><p>Повтори по образцу. Если он не открывается, <a id="video-source" target="_blank" rel="noopener noreferrer">посмотри пример в словаре ↗</a>.</p><button class="button primary" id="return-practice" data-gesture>Вернуться к практике</button></dialog>
+ <div id="navigation-bar" class="navigation-bar hidden"><span><strong>✋ Управление рукой</strong><small>Щипок — нажать · края — прокрутить · кулак — урок</small></span><button id="exit-navigation" data-gesture>К уроку</button></div>
  <div class="hand-cursor hidden" id="hand-cursor" aria-hidden="true"><span></span></div>
  <div class="toast hidden" id="toast" role="status"></div>
 </body>

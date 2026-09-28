@@ -1,4 +1,5 @@
-import {CONNECTIONS} from './recognizer.js';
+import {CONNECTIONS} from './recognizer.js?v=20260928-2';
+import {videoRect,projectLandmark} from './viewport.js?v=20260928-2';
 // Instructional landmark diagram, not a depiction of a human or a reference video.
 export function drawReference(canvas,sign,time=0){
  const c=canvas.getContext('2d'),w=canvas.width,h=canvas.height;
@@ -34,8 +35,8 @@ export function drawOverlay(canvas,video,landmarks,result){
  const c=canvas.getContext('2d');c.clearRect(0,0,canvas.width,canvas.height);
  if(!landmarks)return;
  c.save();c.scale(dpr,dpr);
- const vw=video.videoWidth||640,vh=video.videoHeight||480,s=Math.min(w/vw,h/vh),dw=vw*s,dh=vh*s,ox=(w-dw)/2,oy=(h-dh)/2;
- const point=i=>[ox+(1-landmarks[i].x)*dw,oy+landmarks[i].y*dh];
+ const rect=videoRect(w,h,video.videoWidth||640,video.videoHeight||480);
+ const point=i=>projectLandmark(landmarks[i],rect,video.dataset.mirrored!=='false');
  const bad=new Set((result?.badFingers??[]).flatMap(f=>f===0?[1,2,3,4]:[f*4+1,f*4+2,f*4+3,f*4+4]));
  c.lineWidth=3;c.lineCap='round';
  for(const [a,b] of CONNECTIONS){c.beginPath();c.moveTo(...point(a));c.lineTo(...point(b));c.strokeStyle=bad.has(b)?'#ffd4a2':'#cef569';c.shadowBlur=5;c.shadowColor=c.strokeStyle;c.stroke();}

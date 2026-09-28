@@ -30,21 +30,22 @@ export function extractFeatures(screen, world=null, aspect=4/3, handedness='Righ
  const cropped=screen.some(q=>q.x<.015||q.x>.985||q.y<.015||q.y>.985);
  const closeGap=Math.max(dist(p[8],p[4]),dist(p[12],p[4]))/scale;
  return {fingers,thumbOut,facingCamera,pitch,scale,screenScale,cropped,closeGap,
-   pairTogether:dist(p[8],p[12])/scale<.6,
+   pairTogether:dist(p[8],p[12])/scale<.6,pinchGap:dist(p[8],p[4])/scale,
    openPalm:fingers.every(f=>f.extended)&&thumbOut&&facingCamera,
    center:{x:(screen[0].x+screen[9].x)/2,y:(screen[0].y+screen[9].y)/2},
+   bounds:{left:Math.min(...screen.map(p=>p.x)),right:Math.max(...screen.map(p=>p.x)),top:Math.min(...screen.map(p=>p.y)),bottom:Math.max(...screen.map(p=>p.y))},
    indexUpright:screen[8].y<screen[5].y-.02,
  };
 }
 
 export class GestureRecognizer {
  constructor(){this.reset();}
- reset(){this.ilyStart=null;this.noStart=null;this.noArmed=null;this.yesStart=null;this.yesBase=null;this.yesTurn=null;this.lastSeen=null;this.lastTarget=null;this.lastPitch=null;}
+ reset(){this.ilyHold=new StableHold();this.noStart=null;this.noArmed=null;this.yesStart=null;this.yesBase=null;this.yesTurn=null;this.lastSeen=null;this.lastTarget=null;this.lastPitch=null;}
  update(screen,world,time,target,aspect=4/3,handedness='Right'){
    return this.updateFeatures(extractFeatures(screen,world,aspect,handedness),time,target);
  }
  updateFeatures(f,time,target){
-  if(target!==this.lastTarget || (this.lastSeen!==null&&time-this.lastSeen>250)) {this.reset();this.lastTarget=target;}
+  if(target!==this.lastTarget || (this.lastSeen!==null&&time-this.lastSeen>1200)) {this.reset();this.lastTarget=target;}
   const result=(title,detail,checks=[],progress=0,success=false,kind='working',badFingers=[])=>({title,detail,checks,progress,success,kind,badFingers,features:f});
   const missing=(title,detail)=>{this.reset();this.lastTarget=target;return result(title,detail,[],0,false,'tracking');};
   if(!f) return missing('Покажи руку целиком','Держи кисть перед камерой на однотонном фоне.');
@@ -57,7 +58,7 @@ export class GestureRecognizer {
   const fist=f.fingers.every(x=>x.folded)&&!f.thumbOut;
   if(target==='ily'){
    const checks=[{label:'Пальцы',pass:ilyShape},{label:'Ладонь',pass:f.facingCamera&&f.indexUpright},{label:'Удержание',pass:false}];
-   const fail=(title,bad=[])=>{this.ilyStart=null;return result(title,'Поправь положение — подсказка обновится сама.',checks,0,false,'correction',bad);};
+   const fail=(title,bad=[])=>{const hold=this.ilyHold.update(false,time);return result(hold.grace?'Продолжай удерживать жест':title,hold.grace?'Уточняем положение пальцев. Короткое дрожание не сбросит прогресс.':'Поправь положение — подсказка обновится сама.',checks,hold.progress,false,hold.grace?'working':'correction',hold.grace?[]:bad);};
    if(!index.extended) return fail('Выпрями указательный палец',[1]);
    if(!pinky.extended) return fail('Выпрями мизинец',[4]);
    if(!middle.folded) return fail('Согни средний палец к ладони',[2]);
@@ -65,9 +66,8 @@ export class GestureRecognizer {
    if(!f.thumbOut) return fail('Отведи большой палец в сторону',[0]);
    if(!f.facingCamera) return fail('Разверни ладонь к камере');
    if(!f.indexUpright) return fail('Направь указательный палец вверх',[1]);
-   this.ilyStart??=time;
-   const progress=clamp((time-this.ilyStart)/1000);checks[2].pass=progress>=1;
-   return result(progress>=1?'Получилось! «Я тебя люблю»':'Верно! Удержи положение','Большой, указательный и мизинец раскрыты.',checks,progress,progress>=1,progress>=1?'success':'working');
+   const hold=this.ilyHold.update(true,time),progress=hold.progress;checks[2].pass=hold.success;
+   return result(hold.success?'Получилось! «Я тебя люблю»':'Положение верное — удержи жест',hold.success?'Большой, указательный и мизинец раскрыты.':`Осталось примерно ${(Math.max(0,1-progress)).toFixed(1)} с устойчивого положения.`,checks,progress,hold.success,hold.success?'success':'working');
   }
   if(target==='yes'){
    const checks=[{label:'Кулак',pass:fist},{label:'Движение',pass:this.yesTurn!==null},{label:'Возврат',pass:false}];
@@ -103,5 +103,26 @@ export class GestureRecognizer {
    return result('Коснись большого обоими пальцами','Сомкни указательный и средний с большим пальцем.',checks,.5+clamp((.75-f.closeGap)/.43)*.4,false,'correction',[1,2]);
   }
   return result('Урок завершён','Раскрой ладонь для управления кнопками.');
+ }
+}
+
+// Count only intervals bounded by two valid observations. Brief classification
+// jitter pauses progress; missing hands still reset the recognizer immediately.
+export class StableHold {
+ constructor(){this.elapsed=0;this.lastTime=null;this.lastValid=false;this.invalidSince=null;this.goodFrames=0;}
+ update(valid,time){
+  const delta=this.lastTime===null?0:Math.max(0,time-this.lastTime);
+  if(delta>1200){this.elapsed=0;this.goodFrames=0;this.lastValid=false;this.invalidSince=null;}
+  if(valid){
+   if(this.invalidSince!==null&&time-this.invalidSince>350){this.elapsed=0;this.goodFrames=0;}
+   if(this.lastValid)this.elapsed+=Math.min(delta,350);
+   this.goodFrames++;this.invalidSince=null;
+  }else{
+   this.invalidSince??=time;
+   if(time-this.invalidSince>350){this.elapsed=0;this.goodFrames=0;}
+  }
+  this.lastTime=time;this.lastValid=valid;
+  const progress=clamp(this.elapsed/1000),success=valid&&progress>=1&&this.goodFrames>=4;
+  return {progress,success,grace:!valid&&this.elapsed>0&&time-this.invalidSince<=350};
  }
 }
