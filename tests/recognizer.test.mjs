@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {GestureRecognizer,extractFeatures} from '../dist/recognizer.js';
-import {Course} from '../dist/course.js';
-import {HandCommands} from '../dist/commands.js';
+import {GestureRecognizer,extractFeatures} from '../src/gestures/recognizer.js';
+import {Course} from '../src/lesson/course.js';
+import {HandCommands} from '../src/navigation/commands.js';
 
 const finger=(extended)=>({extended,folded:!extended,bend:extended?170:85,tipBend:160,reach:extended?1.4:.7});
 const feature=(type='ily',overrides={})=>{const pitch=overrides.pitch??0;return {fingers:(type==='ily'?[true,false,false,true]:type==='no'?[true,true,false,false]:[false,false,false,false]).map(finger),thumbOut:type==='ily',facingCamera:true,pitch,screenScale:.2,cropped:false,closeGap:1,screenCloseGap:overrides.closeGap??1,pairTogether:true,indexUpright:true,palmFrame:{direction:{x:0,y:-Math.cos(pitch),z:Math.sin(pitch)},across:{x:1,y:0,z:0},normal:{x:0,y:-Math.sin(pitch),z:-Math.cos(pitch)}},...overrides};};

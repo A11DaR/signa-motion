@@ -5,10 +5,10 @@ import {JSDOM,VirtualConsole} from 'jsdom';
 import {hand} from './fixtures.mjs';
 
 test('Start button drives camera, frame scheduler, calibration, every lesson and camera recovery',async()=>{
- const html=await readFile(new URL('../dist/index.html',import.meta.url),'utf8');
- const source=await readFile(new URL('../dist/app.js',import.meta.url),'utf8');
- const cameraImport=source.match(/from ['"](.\/camera\.js[^'"]*)['"]/)[1];
- const {CameraSession}=await import(new URL(cameraImport,new URL('../dist/app.js',import.meta.url)));
+ const html=await readFile(new URL('../index.html',import.meta.url),'utf8');
+ const source=await readFile(new URL('../src/main.js',import.meta.url),'utf8');
+ const cameraImport=source.match(/from ['"](.\/vision\/camera\.js[^'"]*)['"]/)[1];
+ const {CameraSession}=await import(new URL(cameraImport,new URL('../src/main.js',import.meta.url)));
  const originalStart=CameraSession.prototype.start;
  const errors=[],virtualConsole=new VirtualConsole();
  for(const event of ['error','jsdomError'])virtualConsole.on(event,(...args)=>errors.push(args));
@@ -47,7 +47,7 @@ test('Start button drives camera, frame scheduler, calibration, every lesson and
   for(let i=0;i<count;i++){time+=100;video.currentTime+=.1;const pending=[...frames.entries()];for(const [id] of pending)frames.delete(id);await Promise.all(pending.map(([,callback])=>callback(time)));}
  };
  try{
-  await import('../dist/app.js?startup-regression');
+  await import('../src/main.js?startup-regression');
   $('start-camera').click();await settle();
   assert.equal(state().camera,true,'Start must keep the camera running: '+$('camera-title').textContent);
   assert.equal(state().calibrating,true);assert.equal($('camera-start').classList.contains('hidden'),true);

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {saveCompletedLesson,PROGRESS_KEY} from '../dist/progress.js';
-import {resultsMarkup} from '../dist/results.js';
+import {saveCompletedLesson,PROGRESS_KEY} from '../src/lesson/progress.js';
+import {resultsMarkup} from '../src/ui/results.js';
 
 const summary=(score=94,accuracy=80)=>({completed:true,score,accuracy,hints:score===100?0:2,seconds:55,bestGesture:'ily',errors:{ily:0,yes:1,no:1},perGesture:['ily','yes','no'].map(sign=>({sign,accuracy}))});
 const memory=initial=>{let raw=initial;return {getItem:key=>{assert.equal(key,PROGRESS_KEY);return raw;},setItem:(key,value)=>{assert.equal(key,PROGRESS_KEY);raw=value;},read:()=>JSON.parse(raw)};};

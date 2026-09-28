@@ -7,7 +7,7 @@ import {hand} from './fixtures.mjs';
 test('Real landmark-to-DOM pipeline: complete lesson, hands-free controls and camera geometry',async t=>{
  const consoleErrors=[],virtualConsole=new VirtualConsole();
  for(const event of ['error','jsdomError'])virtualConsole.on(event,(...args)=>consoleErrors.push(args));
- const dom=new JSDOM(await readFile(new URL('../dist/index.html',import.meta.url),'utf8'),{url:'https://signa.test/',pretendToBeVisual:true,runScripts:'outside-only',virtualConsole});
+ const dom=new JSDOM(await readFile(new URL('../index.html',import.meta.url),'utf8'),{url:'https://signa.test/',pretendToBeVisual:true,runScripts:'outside-only',virtualConsole});
  const w=dom.window,doc=w.document,$=id=>doc.getElementById(id),tools=new Map(),timers=new Map();
  for(const event of ['error','unhandledrejection'])w.addEventListener(event,e=>consoleErrors.push(e.error??e.reason??e.message));
  let target=null,timerID=0,time=10000,scrolls=[],animation=null;
@@ -25,7 +25,7 @@ test('Real landmark-to-DOM pipeline: complete lesson, hands-free controls and ca
  doc.modelContext={registerTool:tool=>tools.set(tool.name,tool)};
  for(const [key,value] of Object.entries({videoWidth:640,videoHeight:480}))Object.defineProperty($('camera'),key,{value,writable:true,configurable:true});
  Object.defineProperties($('overlay'),{clientWidth:{value:640},clientHeight:{value:480}});
- const {processDetectionFrame:processFrame,syncCameraLayout,startCalibration}=await import('../dist/app.js?integration');
+ const {processDetectionFrame:processFrame,syncCameraLayout,startCalibration}=await import('../src/main.js?integration');
  const send=(type,options,delta=100)=>{time+=delta;return processFrame(type?hand(type,options):{landmarks:[]},time);};
  const repeat=(type,count,options,delta=100)=>{let result;for(let i=0;i<count;i++)result=send(type,options,delta);return result;};
  const state=()=>tools.get('read_signa_lesson').execute({});

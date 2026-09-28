@@ -1,4 +1,4 @@
-import {LESSON,SIGNS} from './course.js?v=20260928-6';
+import {LESSON,SIGNS} from '../lesson/course.js?v=20260928-6';
 const duration=seconds=>`${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}`;
 const date=timestamp=>new Date(timestamp).toLocaleString('ru-RU',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
 

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {GestureRecognizer,extractFeatures} from '../dist/recognizer.js';
+import {GestureRecognizer,extractFeatures} from '../src/gestures/recognizer.js';
 const {cases}=JSON.parse(readFileSync(new URL('./photo-landmarks.json',import.meta.url)));
 const features=(c,i)=>extractFeatures(c.detection.landmarks[i],c.detection.worldLandmarks[i],c.width/c.height,c.detection.handedness[i][0].categoryName);
 test('Two real ILY photographs and mirrored/rotated variants pass with actual MediaPipe handedness',()=>{

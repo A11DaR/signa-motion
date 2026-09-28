@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {GestureRecognizer,extractFeatures,validateGesture} from '../dist/recognizer.js';
+import {GestureRecognizer,extractFeatures,validateGesture} from '../src/gestures/recognizer.js';
 import {hand} from './fixtures.mjs';
 const refs=JSON.parse(readFileSync(new URL('./motion-landmarks.json',import.meta.url)));
 const features=(d,w=640,h=480)=>extractFeatures(d.landmarks[0],d.worldLandmarks[0],w/h,d.handedness[0][0].categoryName);

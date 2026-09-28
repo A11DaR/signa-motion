@@ -1,6 +1,6 @@
 // Navigation has a deliberate open-palm entry and fist exit, so a noisy frame
 // cannot steal a learning gesture. Pinching is a click only in navigation mode.
-import {isClosedFist} from './landmarks.js?v=20260928-6';
+import {isClosedFist} from '../vision/landmarks.js?v=20260928-6';
 export class HandNavigation {
  constructor(){this.reset();}
  reset(){this.active=false;this.openSince=null;this.fistSince=null;this.pinchSince=null;this.lessonSince=null;this.pinched=false;this.lastSeen=null;this.waitForRelease=false;}

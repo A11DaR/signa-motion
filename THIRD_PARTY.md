@@ -2,7 +2,7 @@
 
 ## Распознавание
 
-- Google MediaPipe Tasks Vision 0.10.32, Apache License 2.0. Копия лицензии: `dist/vendor/LICENSE-mediapipe.txt`.
+- Google MediaPipe Tasks Vision 0.10.32, Apache License 2.0. Копия лицензии: `public/vendor/LICENSE-mediapipe.txt`.
 - Дистрибутив: https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.32/
 - Hand Landmarker model: https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task
 - Официальная документация: https://developers.google.com/edge/mediapipe/solutions/vision/hand_landmarker/web_js

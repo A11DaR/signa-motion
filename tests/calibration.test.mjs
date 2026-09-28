@@ -1,9 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {Calibration} from '../dist/calibration.js';
-import {extractFeatures} from '../dist/landmarks.js';
-import {trackingIssue} from '../dist/gesture-rules.js';
+import {Calibration} from '../src/vision/calibration.js';
+import {extractFeatures} from '../src/vision/landmarks.js';
+import {trackingIssue} from '../src/gestures/gesture-rules.js';
 import {hand} from './fixtures.mjs';
 const features=()=>{const d=hand('palm');return extractFeatures(d.landmarks[0],d.worldLandmarks[0],4/3,'Left');};
 test('Calibration measures the actual palm scale with short tracking gaps',()=>{

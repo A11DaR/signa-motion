@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {HandNavigation} from '../dist/navigation.js';
-import {extractFeatures} from '../dist/recognizer.js';
+import {HandNavigation} from '../src/navigation/navigation.js';
+import {extractFeatures} from '../src/gestures/recognizer.js';
 import {hand} from './fixtures.mjs';
 const f=(type,options)=>{const d=hand(type,options);return extractFeatures(d.landmarks[0],d.worldLandmarks[0],4/3,d.handedness[0][0].categoryName);};
 test('A single noisy open palm does not steal a learning gesture',()=>{const n=new HandNavigation();n.update(f('ily'),0);n.update(f('palm'),100);assert.equal(n.update(f('ily'),200).active,false);n.update(f('palm'),300);assert.equal(n.update(f('palm'),600).active,false);assert.equal(n.update(f('palm'),700).active,true);});

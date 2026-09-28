@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {CameraSession,CAMERA_ERRORS} from '../dist/camera.js';
-import {FrameTracker} from '../dist/tracking.js';
+import {CameraSession,CAMERA_ERRORS} from '../src/vision/camera.js';
+import {FrameTracker} from '../src/vision/tracking.js';
 function fakeStream(){const track=new EventTarget();track.stops=0;track.stop=()=>track.stops++;track.getSettings=()=>({facingMode:'environment'});return {track,getTracks:()=>[track],getVideoTracks:()=>[track]};}
 function video(){const v=new EventTarget();v.readyState=2;v.currentTime=0;v.srcObject=null;v.play=async()=>{};return v;}
 const deferred=()=>{let resolve,reject;const promise=new Promise((a,b)=>{resolve=a;reject=b;});return {promise,resolve,reject};};

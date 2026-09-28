@@ -1,8 +1,8 @@
 import {StableHold} from './stability.js?v=20260928-6';
 import {validateGesture,assessment,trackingIssue} from './gesture-rules.js?v=20260928-6';
-import {extractFeatures} from './landmarks.js?v=20260928-6';
+import {extractFeatures} from '../vision/landmarks.js?v=20260928-6';
 import {WristNod} from './wrist-nod.js?v=20260928-6';
-export {extractFeatures,CONNECTIONS,matchesLessonPose} from './landmarks.js?v=20260928-6';
+export {extractFeatures,CONNECTIONS,matchesLessonPose} from '../vision/landmarks.js?v=20260928-6';
 export {StableHold} from './stability.js?v=20260928-6';
 export {detectGesture,validateGesture,getGestureErrors} from './gesture-rules.js?v=20260928-6';
 const motionCheck=(label,pass,error)=>({label,pass,error,weight:2,score:Number(pass),badFingers:[]});

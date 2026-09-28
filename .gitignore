@@ -7,3 +7,4 @@ node_modules/
 *.bundle
 release/
 .sites-runtime/
+dist/

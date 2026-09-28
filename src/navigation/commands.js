@@ -1,5 +1,5 @@
 // These UI commands are deliberately separate from ASL vocabulary.
-import {isClosedFist} from './landmarks.js?v=20260928-6';
+import {isClosedFist} from '../vision/landmarks.js?v=20260928-6';
 export class HandCommands {
  constructor(){this.key=null;this.since=0;this.latched=false;this.releaseSince=null;}
  update(features,time){

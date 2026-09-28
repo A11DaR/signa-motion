@@ -1,4 +1,4 @@
-import {CONNECTIONS} from './recognizer.js?v=20260928-6';
+import {CONNECTIONS} from '../gestures/recognizer.js?v=20260928-6';
 import {videoRect,projectLandmark} from './viewport.js?v=20260928-6';
 // Instructional landmark diagram, not a depiction of a human or a reference video.
 export function drawReference(canvas,sign,time=0){

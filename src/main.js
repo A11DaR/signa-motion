@@ -1,15 +1,15 @@
-import {resultsMarkup} from './results.js?v=20260928-6';
-import {saveCompletedLesson} from './progress.js?v=20260928-6';
-import {GestureRecognizer, extractFeatures, matchesLessonPose} from './recognizer.js?v=20260928-6';
-import {Course,SIGNS,LESSON,PHRASE} from './course.js?v=20260928-6';
-import {drawOverlay,drawReference} from './diagrams.js?v=20260928-6';
-import {HandCommands} from './commands.js?v=20260928-6';
-import {Calibration} from './calibration.js?v=20260928-6';
-import {CameraSession,CAMERA_ERRORS} from './camera.js?v=20260928-6';
-import {FrameTracker} from './tracking.js?v=20260928-6';
-import {FeedbackGate} from './feedback.js?v=20260928-6';
-import {HandNavigation} from './navigation.js?v=20260928-6';
-import {openReferencePlayer,closeReferencePlayer,toggleReferencePlayer,replayReferencePlayer} from './reference-player.js?v=20260928-6';
+import {resultsMarkup} from './ui/results.js?v=20260928-6';
+import {saveCompletedLesson} from './lesson/progress.js?v=20260928-6';
+import {GestureRecognizer, extractFeatures, matchesLessonPose} from './gestures/recognizer.js?v=20260928-6';
+import {Course,SIGNS,LESSON,PHRASE} from './lesson/course.js?v=20260928-6';
+import {drawOverlay,drawReference} from './ui/diagrams.js?v=20260928-6';
+import {HandCommands} from './navigation/commands.js?v=20260928-6';
+import {Calibration} from './vision/calibration.js?v=20260928-6';
+import {CameraSession,CAMERA_ERRORS} from './vision/camera.js?v=20260928-6';
+import {FrameTracker} from './vision/tracking.js?v=20260928-6';
+import {FeedbackGate} from './lesson/feedback.js?v=20260928-6';
+import {HandNavigation} from './navigation/navigation.js?v=20260928-6';
+import {openReferencePlayer,closeReferencePlayer,toggleReferencePlayer,replayReferencePlayer} from './ui/reference-player.js?v=20260928-6';
 
 const $=id=>document.getElementById(id);
 const course=new Course(),recognizer=new GestureRecognizer(),commands=new HandCommands(),navigation=new HandNavigation();

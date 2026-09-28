@@ -1,8 +1,8 @@
 export async function loadHandModel(){
- const {FilesetResolver,HandLandmarker}=await import('./vendor/vision_bundle.mjs');
- const files=await FilesetResolver.forVisionTasks(new URL('./vendor/',import.meta.url).href.replace(/\/$/,''));
+ const {FilesetResolver,HandLandmarker}=await import('../../public/vendor/vision_bundle.mjs');
+ const files=await FilesetResolver.forVisionTasks(new URL('../../public/vendor/',import.meta.url).href.replace(/\/$/,''));
  if(files.wasmBinaryPath.includes('nosimd'))throw Object.assign(new Error('WebAssembly SIMD required'),{name:'UnsupportedWasm'});
- const options={baseOptions:{modelAssetPath:new URL('./models/hand_landmarker.task',import.meta.url).href,delegate:'GPU'},runningMode:'VIDEO',numHands:2,minHandDetectionConfidence:.6,minHandPresenceConfidence:.6,minTrackingConfidence:.65};
+ const options={baseOptions:{modelAssetPath:new URL('../../public/models/hand_landmarker.task',import.meta.url).href,delegate:'GPU'},runningMode:'VIDEO',numHands:2,minHandDetectionConfidence:.6,minHandPresenceConfidence:.6,minTrackingConfidence:.65};
  try{return await HandLandmarker.createFromOptions(files,options);}catch{options.baseOptions.delegate='CPU';return HandLandmarker.createFromOptions(files,options);}
 }
 export const CAMERA_ERRORS={

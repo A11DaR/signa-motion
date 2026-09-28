@@ -16,9 +16,9 @@
 npm start
 ```
 
-Откройте **http://localhost:3000** и разрешите камеру. Для запуска не нужны `npm install`, ключи API или сервер нейросети: MediaPipe, модель и WASM уже находятся в проекте. Не открывайте HTML двойным щелчком.
+Откройте **http://localhost:3000** и разрешите камеру. Для запуска не нужны `npm install`, ключи API или сервер нейросети: MediaPipe, модель и WASM уже находятся в `public/`. Команда запуска сама формирует `dist/`. Не открывайте HTML двойным щелчком.
 
-Альтернатива без Node.js:
+После `npm run build` готовый `dist/` можно раздать также через Python:
 
 ```bash
 python3 -m http.server 3000 --directory dist --bind 127.0.0.1
@@ -30,9 +30,11 @@ python3 -m http.server 3000 --directory dist --bind 127.0.0.1
 
 | Путь | Назначение |
 | --- | --- |
-| [`dist/`](dist/) | Всё работающее приложение: HTML, CSS и собственные JS-модули. Это исходники без сборщика, а не сгенерированный минифицированный код |
-| [`dist/vendor/`](dist/vendor/) | Готовая библиотека MediaPipe, WASM и её лицензия |
-| [`dist/models/`](dist/models/) | Готовая модель Hand Landmarker |
+| [`src/`](src/) | Собственный JavaScript по папкам `vision`, `gestures`, `lesson`, `navigation`, `ui`; точка входа — `main.js` |
+| [`index.html`](index.html), [`styles.css`](styles.css) | Страница и стили |
+| `dist/` | Готовый сайт, создаётся командой `npm run build` и не хранится в Git |
+| [`public/vendor/`](public/vendor/) | Готовая библиотека MediaPipe, WASM и её лицензия |
+| [`public/models/`](public/models/) | Готовая модель Hand Landmarker |
 | [`tests/`](tests/) | Геометрия, неправильные жесты, удержание, полный урок, камера, управление и сохранение прогресса |
 | [`scripts/`](scripts/) | Локальный сервер и проверка файлов/синтаксиса |
 | [`.github/workflows/`](.github/workflows/) | Автоматические проверки и публикация через GitHub Pages |
