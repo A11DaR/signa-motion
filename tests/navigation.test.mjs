@@ -1,0 +1,10 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {HandNavigation} from '../src/navigation/navigation.js';
+import {extractFeatures} from '../src/gestures/recognizer.js';
+import {hand} from './fixtures.mjs';
+const f=(type,options)=>{const d=hand(type,options);return extractFeatures(d.landmarks[0],d.worldLandmarks[0],4/3,d.handedness[0][0].categoryName);};
+test('A single noisy open palm does not steal a learning gesture',()=>{const n=new HandNavigation();n.update(f('ily'),0);n.update(f('palm'),100);assert.equal(n.update(f('ily'),200).active,false);n.update(f('palm'),300);assert.equal(n.update(f('palm'),600).active,false);assert.equal(n.update(f('palm'),700).active,true);});
+test('Pinch clicks once per press, and only in navigation mode',()=>{const n=new HandNavigation();n.update(f('pinch'),0);assert.equal(n.update(f('pinch'),100).click,false);n.setActive(true);n.update(f('pinch'),200);assert.equal(n.update(f('pinch'),300).click,true);assert.equal(n.update(f('pinch'),600).click,false);n.update(f('palm'),700);n.update(f('pinch'),800);assert.equal(n.update(f('pinch'),900).click,true);});
+test('A deliberate fist returns to the lesson and does not click',()=>{const n=new HandNavigation();n.setActive(true);n.update(f('fist'),0);assert.equal(n.update(f('fist'),400).active,true);const r=n.update(f('fist'),500);assert.equal(r.active,false);assert.equal(r.changed,true);assert.equal(r.click,false);});
+test('Missing hand clears a half-completed pinch without a phantom click',()=>{const n=new HandNavigation();n.setActive(true);n.update(f('pinch'),0);assert.equal(n.update(null,50).click,false);assert.equal(n.update(f('pinch'),500).click,false);assert.equal(n.update(f('pinch'),600).click,true);});

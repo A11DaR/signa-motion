@@ -1,0 +1,20 @@
+{
+  "camera.js": "src/vision/camera.js",
+  "tracking.js": "src/vision/tracking.js",
+  "landmarks.js": "src/vision/landmarks.js",
+  "calibration.js": "src/vision/calibration.js",
+  "gesture-rules.js": "src/gestures/gesture-rules.js",
+  "recognizer.js": "src/gestures/recognizer.js",
+  "stability.js": "src/gestures/stability.js",
+  "wrist-nod.js": "src/gestures/wrist-nod.js",
+  "course.js": "src/lesson/course.js",
+  "feedback.js": "src/lesson/feedback.js",
+  "progress.js": "src/lesson/progress.js",
+  "navigation.js": "src/navigation/navigation.js",
+  "commands.js": "src/navigation/commands.js",
+  "results.js": "src/ui/results.js",
+  "diagrams.js": "src/ui/diagrams.js",
+  "viewport.js": "src/ui/viewport.js",
+  "reference-player.js": "src/ui/reference-player.js",
+  "app.js": "src/main.js"
+}
